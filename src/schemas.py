@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from pydantic import BaseModel as PydanticBaseModel, ConfigDict
+from pydantic import BaseModel as PydanticBaseModel
+from pydantic import ConfigDict
 
 
 class DatetimeQueryParams(PydanticBaseModel):
@@ -10,6 +11,7 @@ class DatetimeQueryParams(PydanticBaseModel):
 
 class BaseModel(PydanticBaseModel):
     model_config = ConfigDict(from_attributes=True)
+
 
 class LinkView(BaseModel):
     link: str

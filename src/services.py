@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import select, insert
+from sqlalchemy import insert, select
 
 import models
 import schemas
@@ -27,11 +27,17 @@ class DomainService:
 
     async def list(self, dp: DatetimeQueryParams) -> List[str]:
         async with async_session() as session:
-            statement = select(self.model.name.distinct()).join(models.LinkView, self.model.id == models.LinkView.domain_id)
+            statement = select(self.model.name.distinct()).join(
+                models.LinkView, self.model.id == models.LinkView.domain_id
+            )
             if dp.from_timestamp:
-                statement = statement.where(models.LinkView.viewed_at >= dp.from_timestamp)
+                statement = statement.where(
+                    models.LinkView.viewed_at >= dp.from_timestamp
+                )
             if dp.to_timestamp:
-                statement = statement.where(models.LinkView.viewed_at <= dp.to_timestamp)
+                statement = statement.where(
+                    models.LinkView.viewed_at <= dp.to_timestamp
+                )
             results = await session.execute(statement)
             return results.scalars().all()
 
@@ -45,4 +51,3 @@ class LinkViewService:
             statement = insert(self.model)
             await session.execute(statement, [link.model_dump() for link in links])
             await session.commit()
-

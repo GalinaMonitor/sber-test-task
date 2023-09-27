@@ -5,8 +5,8 @@ from fastapi import APIRouter
 from pydantic import AnyHttpUrl
 from starlette.requests import Request
 
-from services import DomainService, LinkViewService
 from schemas import LinkView
+from services import DomainService, LinkViewService
 from utils import parse_timestamp_query_params
 
 router = APIRouter()
@@ -18,7 +18,9 @@ async def add_links(links: List[AnyHttpUrl]):
     link_schemas_list = []
     for link in links:
         domain = await DomainService().retrieve_or_create(link.host)
-        link_schemas_list.append(LinkView(link=str(link), domain_id=domain.id, viewed_at=received_at))
+        link_schemas_list.append(
+            LinkView(link=str(link), domain_id=domain.id, viewed_at=received_at)
+        )
     await LinkViewService().insert(link_schemas_list)
     return {"status": "ok"}
 

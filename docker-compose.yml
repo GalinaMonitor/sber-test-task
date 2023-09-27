@@ -1,0 +1,41 @@
+networks:
+  network:
+    ipam:
+      driver: default
+      config:
+        - subnet: "11.1.0.0/24"
+
+services:
+  postgres:
+    networks:
+      network:
+        ipv4_address: 11.1.0.100
+    image: postgres:15
+    container_name: postgres
+    env_file:
+      - .env
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d admin_db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    networks:
+      network:
+        ipv4_address: 11.1.0.11
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    restart: always
+    container_name: backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres:

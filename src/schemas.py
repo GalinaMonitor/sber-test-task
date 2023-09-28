@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any, List
 
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import ConfigDict
@@ -7,6 +8,15 @@ from pydantic import ConfigDict
 class DatetimeQueryParams(PydanticBaseModel):
     from_timestamp: datetime = None
     to_timestamp: datetime = None
+
+
+class ResponseStatus(PydanticBaseModel):
+    status: Any
+
+
+class ResponseDomains(PydanticBaseModel):
+    status: Any
+    domains: List[str]
 
 
 class BaseModel(PydanticBaseModel):

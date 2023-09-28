@@ -4,13 +4,14 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from starlette.responses import JSONResponse
 
-from models import Base
-from routes import router
+from src.models import Base
+from src.routes import router
+from src.schemas import ResponseStatus
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    from db import engine
+    from src.db import engine
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -23,7 +24,7 @@ app = FastAPI(lifespan=lifespan)
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request, exc):
-    return JSONResponse({"status": exc.args}, status_code=400)
+    return JSONResponse(ResponseStatus(status=exc.args).model_dump(), status_code=400)
 
 
 app.include_router(router)
